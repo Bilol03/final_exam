@@ -10,7 +10,15 @@ import { AssignmentsModule } from './assignments/assignments.module';
 import { ResultsModule } from './results/results.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, CourseModule, ModuleModule, LessonsModule, AssignmentsModule, ResultsModule],
+  imports: [
+    AuthModule,
+    UsersModule,
+    CourseModule,
+    ModuleModule,
+    LessonsModule,
+    AssignmentsModule,
+    ResultsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
