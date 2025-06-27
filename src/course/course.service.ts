@@ -41,8 +41,21 @@ export class CourseService {
     return course;
   }
 
-  update(id: number, updateCourseDto: UpdateCourseDto) {
-    return `This action updates a #${id} course`;
+  async update(id: number, updateCourseDto: UpdateCourseDto) {
+     const course = await this.courseRepository.findOne({ where: { id } });
+    if (!course) {
+      throw new NotFoundException('Course not found');
+    }
+
+    if (updateCourseDto.teacherId) {
+      const teacher = await this.userService.findOne(updateCourseDto.teacherId);
+      if (!teacher) {
+        throw new NotFoundException('Teacher not found');
+      }
+    }
+
+    const updated = Object.assign(course, updateCourseDto);
+    return this.courseRepository.save(updated);
   }
 
   remove(id: number) {
