@@ -1,19 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserInterface } from 'src/interfaces/user.interface';
+import { UsersService } from 'src/users/users.service';
+import { Repository } from 'typeorm';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
+import { Course } from './entities/course.entity';
+import { UserRole } from 'src/enums/roles.enum';
 
 @Injectable()
 export class CourseService {
-  create(createCourseDto: CreateCourseDto) {
-    return 'This action adds a new course';
+  constructor(
+    @InjectRepository(Course)
+    private readonly courseRepository: Repository<Course>,
+    private userService: UsersService,
+    
+  ) {}
+  async create(createCourseDto: CreateCourseDto, user: UserInterface) {
+    const foundUser = await this.userService.findOne(user.id);
+    if (!foundUser) throw new NotFoundException('User not found');
+    const newCourse = this.courseRepository.create({
+      title: createCourseDto.title,
+      description: createCourseDto.description,
+      price: createCourseDto.price,
+      category: createCourseDto.category,
+      level: createCourseDto.level,
+      teacherId: foundUser.id,
+    });
+    this.userService.update(user.id, {role: UserRole.teacher})
+    return this.courseRepository.save(newCourse);
   }
 
-  findAll() {
-    return `This action returns all course`;
+  async findAll() {
+    return await this.courseRepository.find()
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} course`;
+  async findOne(id: number) {
+    const course = await this.courseRepository.findOne({where: {id}});
+    if (!course) throw new NotFoundException('Course not found');
+    return course;
   }
 
   update(id: number, updateCourseDto: UpdateCourseDto) {

@@ -1,6 +1,7 @@
 import { Exclude } from 'class-transformer';
+import { Course } from 'src/course/entities/course.entity';
 import { UserRole } from 'src/enums/roles.enum';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('user')
 export class User {
@@ -19,4 +20,7 @@ export class User {
     default: UserRole.student,
   })
   role: UserRole;
+
+  @OneToMany(() => Course, (course) => course.teacher)
+  courses: Course[];
 }
