@@ -6,10 +6,14 @@ WORKDIR /app
 COPY . .
 
 # 3. Dependencies o‘rnatish
+
+COPY package*.json ./
 RUN npm install
 
+COPY . .
+
 # 5. Port ochish
-EXPOSE 4000
+EXPOSE 8080
 
 # 6. Loyihani ishga tushirish
 CMD ["npm", "run", "start:dev"]
