@@ -50,6 +50,8 @@ export class CourseController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   remove(@Param('id') id: string) {
     return this.courseService.remove(+id);
   }

@@ -66,7 +66,9 @@ export class CourseService {
     return this.courseRepository.save(updated);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} course`;
+  async remove(id: number) {
+    const deleted = await this.courseRepository.delete(id);
+    if (deleted.affected == 0) throw new NotFoundException('User not found');
+    return { message: 'Course deleted successfully!' };
   }
 }
