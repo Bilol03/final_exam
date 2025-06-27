@@ -36,13 +36,17 @@ export class CourseController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   findOne(@Param('id') id: string) {
     return this.courseService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) {
-    return this.courseService.update(+id, updateCourseDto);
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin', 'teacher')
+  update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto, @Req() req: Request & { user: UserInterface }) {
+    return this.courseService.update(+id, updateCourseDto, req.user);
   }
 
   @Delete(':id')

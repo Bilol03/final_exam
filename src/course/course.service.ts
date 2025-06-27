@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserRole } from 'src/enums/roles.enum';
 import { UserInterface } from 'src/interfaces/user.interface';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { Course } from './entities/course.entity';
-import { UserRole } from 'src/enums/roles.enum';
 
 @Injectable()
 export class CourseService {
@@ -14,7 +14,6 @@ export class CourseService {
     @InjectRepository(Course)
     private readonly courseRepository: Repository<Course>,
     private userService: UsersService,
-    
   ) {}
   async create(createCourseDto: CreateCourseDto, user: UserInterface) {
     const foundUser = await this.userService.findOne(user.id);
@@ -27,24 +26,33 @@ export class CourseService {
       level: createCourseDto.level,
       teacherId: foundUser.id,
     });
-    this.userService.update(user.id, {role: UserRole.teacher})
+    this.userService.update(user.id, { role: UserRole.teacher });
     return this.courseRepository.save(newCourse);
   }
 
   async findAll() {
-    return await this.courseRepository.find()
+    return await this.courseRepository.find();
   }
 
   async findOne(id: number) {
-    const course = await this.courseRepository.findOne({where: {id}});
+    const course = await this.courseRepository.findOne({ where: { id } });
     if (!course) throw new NotFoundException('Course not found');
     return course;
   }
 
-  async update(id: number, updateCourseDto: UpdateCourseDto) {
-     const course = await this.courseRepository.findOne({ where: { id } });
+  async update(
+    id: number,
+    updateCourseDto: UpdateCourseDto,
+    user: UserInterface,
+  ) {
+    const course = await this.courseRepository.findOne({ where: { id } });
+
     if (!course) {
       throw new NotFoundException('Course not found');
+    }
+    if (user.role == UserRole.teacher) {
+      if (user.id != course.teacherId)
+        throw new Error('You are not the teacher of this course');
     }
 
     if (updateCourseDto.teacherId) {
