@@ -10,8 +10,8 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    return await this.userRepository.find()
   }
 
   async findOne(id: number) {
@@ -25,7 +25,9 @@ export class UsersService {
     return await this.userRepository.save(updated);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    const deleted = await this.userRepository.delete(id);
+    if (deleted.affected === 0) throw new NotFoundException('User not found');
+    return { message: 'User deleted successfully' };
   }
 }
