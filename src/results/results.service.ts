@@ -43,28 +43,35 @@ export class ResultsService {
 
   async findOne(id: number, user: UserInterface) {
     const assignment = await this.resultRepository.findOne({
-      where: { userId: user.id },
+      where: { userId: user.id, id },
       relations: ['assignment'],
     });
-    if (!assignment)
-      throw new NotFoundException('You did not do any assignments');
+    if (!assignment) throw new NotFoundException('This assignment not found');
     return assignment;
   }
 
-  update(id: number, updateResultDto: UpdateResultDto, user: UserInterface) {
+  async update(
+    id: number,
+    updateResultDto: UpdateResultDto,
+    user: UserInterface,
+  ) {
     if (user.role == UserRole.teacher) {
       if (!updateResultDto.score || updateResultDto.body)
         throw new UnauthorizedException('You can only update score');
-      return this.resultRepository.update(id, { score: updateResultDto.score });
+      const updated = await this.resultRepository.update(id, {
+        score: updateResultDto.score,
+      });
+      if (updated.affected == 0) throw new Error('Not updated');
+      return { message: 'Updated successfully' };
     }
     if (user.role == UserRole.student) {
       if (!updateResultDto.body || updateResultDto.score)
         throw new UnauthorizedException('You can only update body');
-      return this.resultRepository.update(id, { body: updateResultDto.body });
+      const updated = await this.resultRepository.update(id, {
+        body: updateResultDto.body,
+      });
+      if (updated.affected == 0) throw new Error('Not updated');
+      return { message: 'Updated successfully' };
     }
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} result`;
   }
 }

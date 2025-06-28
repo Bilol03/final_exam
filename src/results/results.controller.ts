@@ -40,17 +40,18 @@ export class ResultsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.resultsService.findOne(+id);
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.student)
+  findOne(@Param('id') id: string, @Req() req: Request & { user: UserInterface }) {
+    return this.resultsService.findOne(+id, req.user);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateResultDto: UpdateResultDto) {
-    return this.resultsService.update(+id, updateResultDto);
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.student, UserRole.teacher)
+  update(@Param('id') id: string, @Body() updateResultDto: UpdateResultDto, @Req() req: Request & { user: UserInterface }) {
+    return this.resultsService.update(+id, updateResultDto, req.user);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.resultsService.remove(+id);
-  }
+
 }
