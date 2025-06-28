@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
+import { error } from 'console';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -28,4 +29,4 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document);
   await app.listen(process.env.PORT ?? 3000);
 }
-bootstrap().then(() => console.log("Project ishga tushdi")).catch();
+bootstrap().then(() => console.log("Project ishga tushdi")).catch(error);

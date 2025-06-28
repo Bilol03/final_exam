@@ -7,6 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from 'src/decorators/role.decorator';
 import { Request } from 'express';
+import { UserInterface } from 'src/interfaces/user.interface';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -20,16 +21,9 @@ export class RolesGuard implements CanActivate {
 
     if (!requiredRoles) return true;
 
-    // const request = context.switchToHttp().getRequest();
-    // const user = request.user;
-
-    // if (!user || !user.role) {
-    //   throw new ForbiddenException('Foydalanuvchi aniqlanmadi');
-    // }
-
     const request = context
       .switchToHttp()
-      .getRequest<Request & { user?: any }>();
+      .getRequest<Request & { user: UserInterface }>();
       const user = request.user;
     const hasRole = requiredRoles.includes(user.role);
 
