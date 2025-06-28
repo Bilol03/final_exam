@@ -1,23 +1,35 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
-import { ModuleService } from './module.service';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/decorators/role.decorator';
+import { UserRole } from 'src/enums/roles.enum';
+import { UserInterface } from 'src/interfaces/user.interface';
 import { CreateModuleDto } from './dto/create-module.dto';
 import { UpdateModuleDto } from './dto/update-module.dto';
+import { ModuleService } from './module.service';
 
 @Controller('module')
 export class ModuleController {
   constructor(private readonly moduleService: ModuleService) {}
 
   @Post()
-  create(@Body() createModuleDto: CreateModuleDto) {
-    return this.moduleService.create(createModuleDto);
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.admin, UserRole.teacher)
+  create(
+    @Body() createModuleDto: CreateModuleDto,
+    @Req() req: Request & { user: UserInterface },
+  ) {
+    return this.moduleService.create(createModuleDto, req.user);
   }
 
   @Get()
@@ -31,12 +43,23 @@ export class ModuleController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateModuleDto: UpdateModuleDto) {
-    return this.moduleService.update(+id, updateModuleDto);
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.admin, UserRole.teacher)
+  update(
+    @Param('id') id: string,
+    @Body() updateModuleDto: UpdateModuleDto,
+    @Req() req: Request & { user: UserInterface },
+  ) {
+    return this.moduleService.update(+id, updateModuleDto, req.user);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.moduleService.remove(+id);
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.admin, UserRole.teacher)
+  remove(
+    @Param('id') id: string,
+    @Req() req: Request & { user: UserInterface },
+  ) {
+    return this.moduleService.remove(+id, req.user);
   }
 }
