@@ -26,6 +26,8 @@ export class ResultsService {
       createResultDto.assignmentId,
       user,
     );
+
+    if (!assignment) throw new NotFoundException('Assignment not found');
     const newResult = this.resultRepository.create({
       ...createResultDto,
       userId: user.id,
@@ -55,7 +57,7 @@ export class ResultsService {
     updateResultDto: UpdateResultDto,
     user: UserInterface,
   ) {
-    if (user.role == UserRole.teacher) {
+    if (user.role == 'teacher') {
       if (!updateResultDto.score || updateResultDto.body)
         throw new UnauthorizedException('You can only update score');
       const updated = await this.resultRepository.update(id, {
@@ -64,7 +66,7 @@ export class ResultsService {
       if (updated.affected == 0) throw new Error('Not updated');
       return { message: 'Updated successfully' };
     }
-    if (user.role == UserRole.student) {
+    if (user.role == 'student') {
       if (!updateResultDto.body || updateResultDto.score)
         throw new UnauthorizedException('You can only update body');
       const updated = await this.resultRepository.update(id, {

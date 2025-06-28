@@ -27,7 +27,7 @@ export class LessonsService {
     return true;
   }
   async create(createLessonDto: CreateLessonDto, user: UserInterface) {
-    if (user.role == UserRole.teacher) {
+    if (user.role == 'teacher') {
       const isTeacher = await this.teacherValidator(
         createLessonDto.moduleId,
         user,
@@ -35,7 +35,7 @@ export class LessonsService {
       if (!isTeacher)
         throw new NotFoundException('You are not the teacher of this course');
     }
-    const lesson = await this.lessonsRepository.create(createLessonDto);
+    const lesson = this.lessonsRepository.create(createLessonDto);
     return await this.lessonsRepository.save(lesson);
   }
 
@@ -43,8 +43,9 @@ export class LessonsService {
   async findOne(id: number, user: UserInterface) {
     const lesson = await this.lessonsRepository.findOne({ where: { id } });
     if (!lesson) throw new NotFoundException('Lesson not found');
-    if(user.role == UserRole.student) {
+    if(user.role == 'student') {
       const module = await this.moduleService.findOne(lesson.moduleId, user);
+      if (!module) throw new NotFoundException('Module not found');
     }
     return lesson;
   }
@@ -56,7 +57,7 @@ export class LessonsService {
   ) {
     const lesson = await this.lessonsRepository.findOne({ where: { id } });
     if (!lesson) throw new NotFoundException('Lesson not found');
-    if (user.role == UserRole.teacher) {
+    if (user.role == 'teacher') {
       const isTeacher = await this.teacherValidator(lesson.moduleId, user);
       if (!isTeacher)
         throw new NotFoundException('You are not the teacher of this course');
@@ -72,7 +73,7 @@ export class LessonsService {
   async remove(id: number, user: UserInterface) {
     const lesson = await this.lessonsRepository.findOne({ where: { id } });
     if (!lesson) throw new NotFoundException('Lesson not found');
-    if (user.role == UserRole.teacher) {
+    if (user.role == 'teacher') {
       const isTeacher = await this.teacherValidator(lesson.moduleId, user);
       if (!isTeacher)
         throw new NotFoundException('You are not the teacher of this course');

@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
   Patch,
@@ -35,23 +34,28 @@ export class ResultsController {
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.student)
-  findAll( @Req() req: Request & { user: UserInterface }) {
+  findAll(@Req() req: Request & { user: UserInterface }) {
     return this.resultsService.findAll(req.user);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.student)
-  findOne(@Param('id') id: string, @Req() req: Request & { user: UserInterface }) {
+  findOne(
+    @Param('id') id: string,
+    @Req() req: Request & { user: UserInterface },
+  ) {
     return this.resultsService.findOne(+id, req.user);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.student, UserRole.teacher)
-  update(@Param('id') id: string, @Body() updateResultDto: UpdateResultDto, @Req() req: Request & { user: UserInterface }) {
+  update(
+    @Param('id') id: string,
+    @Body() updateResultDto: UpdateResultDto,
+    @Req() req: Request & { user: UserInterface },
+  ) {
     return this.resultsService.update(+id, updateResultDto, req.user);
   }
-
-
 }

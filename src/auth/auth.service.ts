@@ -28,9 +28,9 @@ export class AuthService {
 
     if (existEmail) throw new ConflictException('This email is already exist');
 
-    const salt = await this.ConfigService.get('salt');
+    const salt = this.ConfigService.get<string>('salt') ?? 12;
     const hashed = await bcrypt.hash(createAuthDto.password, +salt);
-    const newUser = await this.userRepository.create({
+    const newUser = this.userRepository.create({
       name: createAuthDto.name,
       email: createAuthDto.email,
       password: hashed,

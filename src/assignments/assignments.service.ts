@@ -24,7 +24,7 @@ export class AssignmentsService {
     );
     const course = await this.courseService.findOne(module.courseId);
     if (!course) throw new NotFoundException('Course not found');
-    if (user.role == UserRole.teacher) {
+    if (user.role == 'teacher') {
       if (user.id != course.teacherId)
         throw new NotFoundException('You are not the teacher of this course');
     }
@@ -37,13 +37,14 @@ export class AssignmentsService {
       where: { id },
     });
     console.log(assignment);
-    
+
     if (!assignment) throw new NotFoundException('Assignment not found');
-    if (user.role == UserRole.student) {
+    if (user.role == 'student') {
       const module = await this.moduleService.findOne(
         assignment.moduleId,
         user,
       );
+      if(!module) throw new NotFoundException('Module not found');
     }
     return assignment;
   }

@@ -1,7 +1,10 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CourseService } from 'src/course/course.service';
-import { UserRole } from 'src/enums/roles.enum';
 import { UserInterface } from 'src/interfaces/user.interface';
 import { Repository } from 'typeorm';
 import { CreateModuleDto } from './dto/create-module.dto';
@@ -27,12 +30,14 @@ export class ModuleService {
   }
 
   async findOne(id: number, user: UserInterface) {
-    
     const module = await this.moduleRepository.findOne({ where: { id } });
     if (!module) throw new NotFoundException('Module not found');
-    if (user.role == UserRole.student) {
-      const enrolled = await this.courseService.isEnrolled(user, module.courseId);
-    
+    if (user.role == 'student') {
+      const enrolled = await this.courseService.isEnrolled(
+        user,
+        module.courseId,
+      );
+
       if (!enrolled) throw new NotFoundException('You are not enrolled');
     }
 
@@ -84,9 +89,13 @@ export class ModuleService {
       relations: ['lessons'],
     });
     if (!module) throw new NotFoundException('Module not found');
-    if(user.role == UserRole.student) {
-      const enrolled = await this.courseService.isEnrolled(user, module.courseId)
-      if(!enrolled) throw new UnauthorizedException('You are not enrolled in this course')
+    if (user.role == 'student') {
+      const enrolled = await this.courseService.isEnrolled(
+        user,
+        module.courseId,
+      );
+      if (!enrolled)
+        throw new UnauthorizedException('You are not enrolled in this course');
     }
     return module;
   }

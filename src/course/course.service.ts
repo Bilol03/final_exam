@@ -40,7 +40,7 @@ export class CourseService {
       level: createCourseDto.level,
       teacherId: foundUser.id,
     });
-    this.userService.update(user.id, { role: UserRole.teacher });
+    await this.userService.update(user.id, { role: 'teacher' });
     return this.courseRepository.save(newCourse);
   }
 
@@ -64,7 +64,7 @@ export class CourseService {
     if (!course) {
       throw new NotFoundException('Course not found');
     }
-    if (user.role == UserRole.teacher) {
+    if (user.role == 'teacher') {
       if (user.id != course.teacherId)
         throw new Error('You are not the teacher of this course');
     }
@@ -77,7 +77,7 @@ export class CourseService {
     }
 
     const updated = Object.assign(course, updateCourseDto);
-    return this.courseRepository.save(updated);
+    return await this.courseRepository.save(updated);
   }
 
   async remove(id: number) {
@@ -89,7 +89,7 @@ export class CourseService {
   async getModules(id: number, user: UserInterface) {
     console.log(user);
     
-    if (user.role == UserRole.student) {
+    if (user.role == 'student') {
       const enrolled = await this.isEnrolled(user, id);
       console.log(enrolled);
       
@@ -109,7 +109,7 @@ export class CourseService {
     if (!course) throw new NotFoundException('Course not found');
     if (!foundUser) throw new NotFoundException('User not found');
 
-    const enrollment = await this.enrollRepository.create({
+    const enrollment = this.enrollRepository.create({
       courseId: course.id,
       studentId: foundUser.id,
     });
