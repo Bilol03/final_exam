@@ -31,8 +31,8 @@ export class LessonsController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  findOne(@Param('id') id: string) {
-    return this.lessonsService.findOne(+id);
+  findOne(@Param('id') id: string, @Req() req: Request & { user: UserInterface }) {
+    return this.lessonsService.findOne(+id, req.user);
   }
 
   @Patch(':id')

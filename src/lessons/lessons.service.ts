@@ -40,9 +40,12 @@ export class LessonsService {
   }
 
 
-  async findOne(id: number) {
+  async findOne(id: number, user: UserInterface) {
     const lesson = await this.lessonsRepository.findOne({ where: { id } });
     if (!lesson) throw new NotFoundException('Lesson not found');
+    if(user.role == UserRole.student) {
+      const module = await this.moduleService.findOne(lesson.moduleId, user);
+    }
     return lesson;
   }
 
@@ -62,7 +65,7 @@ export class LessonsService {
     if (updated.affected == 0) throw new Error('Course not updated');
     return {
       message: 'Lesson updated successfully',
-      lesson: await this.findOne(id),
+      lesson: await this.findOne(id, user),
     };
   }
 
