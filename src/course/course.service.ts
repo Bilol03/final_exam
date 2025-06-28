@@ -20,10 +20,11 @@ export class CourseService {
   ) {}
 
   async isEnrolled(user: UserInterface, courseId: number) {
-    const enrolled = this.enrollRepository.findOne({
+    const enrolled = await this.enrollRepository.findOne({
       where: { studentId: user.id, courseId: courseId },
     });
 
+    
     if (!enrolled) return false;
     return true;
   }
@@ -86,8 +87,12 @@ export class CourseService {
   }
 
   async getModules(id: number, user: UserInterface) {
+    console.log(user);
+    
     if (user.role == UserRole.student) {
-      const enrolled = this.isEnrolled(user, id);
+      const enrolled = await this.isEnrolled(user, id);
+      console.log(enrolled);
+      
       if (!enrolled) throw new NotFoundException('You are not enrolled');
     }
     const course = await this.courseRepository.findOne({

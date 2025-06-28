@@ -27,10 +27,12 @@ export class ModuleService {
   }
 
   async findOne(id: number, user: UserInterface) {
+    
     const module = await this.moduleRepository.findOne({ where: { id } });
     if (!module) throw new NotFoundException('Module not found');
     if (user.role == UserRole.student) {
-      const enrolled = this.courseService.isEnrolled(user, module.courseId);
+      const enrolled = await this.courseService.isEnrolled(user, module.courseId);
+    
       if (!enrolled) throw new NotFoundException('You are not enrolled');
     }
 

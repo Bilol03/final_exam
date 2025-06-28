@@ -33,6 +33,7 @@ export class ModuleController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   findOne(@Param('id') id: string, @Req() req: Request & { user: UserInterface }) {
     return this.moduleService.findOne(+id, req.user);
   }
