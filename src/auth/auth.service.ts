@@ -38,7 +38,7 @@ export class AuthService {
 
     return (
       await this.userRepository.save(newUser),
-      { message: 'User created successfully', newUser }
+      { message: 'User created successfully', user: this.userRepository.findOne({where: {id: newUser.id}}) }
     );
   }
 

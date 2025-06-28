@@ -1,5 +1,6 @@
 import { Exclude } from 'class-transformer';
 import { Course } from 'src/course/entities/course.entity';
+import { Enrollment } from 'src/course/entities/enroll.entity';
 import { UserRole } from 'src/enums/roles.enum';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -23,4 +24,7 @@ export class User {
 
   @OneToMany(() => Course, (course) => course.teacher)
   courses: Course[];
+
+  @OneToMany(() => Enrollment, (enrollment) => enrollment.user)
+  enrollments: Enrollment[];
 }

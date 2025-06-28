@@ -32,14 +32,9 @@ export class ModuleController {
     return this.moduleService.create(createModuleDto, req.user);
   }
 
-  @Get()
-  findAll() {
-    return this.moduleService.findAll();
-  }
-
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.moduleService.findOne(+id);
+  findOne(@Param('id') id: string, @Req() req: Request & { user: UserInterface }) {
+    return this.moduleService.findOne(+id, req.user);
   }
 
   @Patch(':id')
@@ -61,5 +56,11 @@ export class ModuleController {
     @Req() req: Request & { user: UserInterface },
   ) {
     return this.moduleService.remove(+id, req.user);
+  }
+
+  @Get(':moduleId/lessons')
+  @UseGuards(JwtAuthGuard)
+  async getModules(@Param('moduleId') moduleId: string) {
+    return await this.moduleService.getLessons(+moduleId);
   }
 }

@@ -19,7 +19,7 @@ export class LessonsService {
   ) {}
 
   async teacherValidator(moduleId: number, user: UserInterface) {
-    const module = await this.moduleService.findOne(moduleId);
+    const module = await this.moduleService.findOne(moduleId, user);
     if (!module) throw new NotFoundException('Module not found');
     const course = await this.courseService.findOne(module?.courseId);
     if (!course) throw new NotFoundException('Course not found');

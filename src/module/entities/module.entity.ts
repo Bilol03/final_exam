@@ -17,6 +17,7 @@ export class Modules {
 
   @OneToMany(() => Lessons, (lesson) => lesson.module)
   lessons: Lessons[];
-  @Column()
+  
+  @Column({nullable: false})
   courseId: number;
 }

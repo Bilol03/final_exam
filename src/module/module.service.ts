@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CourseService } from 'src/course/course.service';
+import { UserRole } from 'src/enums/roles.enum';
 import { UserInterface } from 'src/interfaces/user.interface';
 import { Repository } from 'typeorm';
 import { CreateModuleDto } from './dto/create-module.dto';
@@ -14,6 +15,7 @@ export class ModuleService {
     private readonly moduleRepository: Repository<Modules>,
     private readonly courseService: CourseService,
   ) {}
+
   async create(createModuleDto: CreateModuleDto, user: UserInterface) {
     const course = await this.courseService.findOne(createModuleDto.courseId);
     if (!course) throw new NotFoundException('Course not found');
@@ -24,13 +26,14 @@ export class ModuleService {
     return this.moduleRepository.save(new_module);
   }
 
-  async findAll() {
-    return await this.moduleRepository.find();
-  }
-
-  findOne(id: number) {
-    const module = this.moduleRepository.findOne({ where: { id } });
+  async findOne(id: number, user: UserInterface) {
+    const module = await this.moduleRepository.findOne({ where: { id } });
     if (!module) throw new NotFoundException('Module not found');
+    if (user.role == UserRole.student) {
+      const enrolled = this.courseService.isEnrolled(user, module.courseId);
+      if (!enrolled) throw new NotFoundException('You are not enrolled');
+    }
+
     return module;
   }
 
@@ -71,5 +74,14 @@ export class ModuleService {
     if (deleted.affected === 0)
       throw new NotFoundException('Module Already deleted');
     return { message: 'Module deleted successfully' };
+  }
+
+  async getLessons(id: number) {
+    const module = await this.moduleRepository.findOne({
+      where: { id },
+      relations: ['lessons'],
+    });
+    if (!module) throw new NotFoundException('Module not found');
+    return module;
   }
 }

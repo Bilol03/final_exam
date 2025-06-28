@@ -9,13 +9,13 @@ export class Lessons {
     title: string;
     @Column()
     description: string;
-    @Column()
+    @Column({nullable: true})
     content: string;
     @ManyToOne(() => Modules, (module) => module.lessons, {onDelete: 'CASCADE'})
-    @JoinColumn( {name: 'module_id'} )
+    @JoinColumn( {name: 'moduleId'} )
     module: Modules;
 
     @Column()
     moduleId: number;
-    
+
 }

@@ -1,6 +1,7 @@
 import { Modules } from 'src/module/entities/module.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Enrollment } from './enroll.entity';
 
 @Entity()
 export class Course {
@@ -28,6 +29,9 @@ export class Course {
 
   @OneToMany(() => Modules, (module) => module.course)
   modules: Modules[];
+
+  @OneToMany(() => Enrollment, (enrollment) => enrollment.course)
+  enrollments: Enrollment[];
 
   @Column()
   teacherId: number;
