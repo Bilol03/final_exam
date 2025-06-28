@@ -39,9 +39,6 @@ export class LessonsService {
     return await this.lessonsRepository.save(lesson);
   }
 
-  async findAll() {
-    return await this.lessonsRepository.find();
-  }
 
   async findOne(id: number) {
     const lesson = await this.lessonsRepository.findOne({ where: { id } });

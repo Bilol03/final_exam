@@ -28,11 +28,6 @@ export class LessonsController {
     return this.lessonsService.create(createLessonDto, req.user);
   }
 
-  @Get()
-  @UseGuards(JwtAuthGuard)
-  findAll() {
-    return this.lessonsService.findAll();
-  }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)

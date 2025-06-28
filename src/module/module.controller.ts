@@ -61,7 +61,7 @@ export class ModuleController {
 
   @Get(':moduleId/lessons')
   @UseGuards(JwtAuthGuard)
-  async getModules(@Param('moduleId') moduleId: string) {
-    return await this.moduleService.getLessons(+moduleId);
+  async getModules(@Param('moduleId') moduleId: string, @Req() req: Request & { user: UserInterface }) {
+    return await this.moduleService.getLessons(+moduleId, req.user);
   }
 }

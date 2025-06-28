@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CourseService } from 'src/course/course.service';
 import { UserRole } from 'src/enums/roles.enum';
@@ -78,12 +78,16 @@ export class ModuleService {
     return { message: 'Module deleted successfully' };
   }
 
-  async getLessons(id: number) {
+  async getLessons(id: number, user: UserInterface) {
     const module = await this.moduleRepository.findOne({
       where: { id },
       relations: ['lessons'],
     });
     if (!module) throw new NotFoundException('Module not found');
+    if(user.role == UserRole.student) {
+      const enrolled = await this.courseService.isEnrolled(user, module.courseId)
+      if(!enrolled) throw new UnauthorizedException('You are not enrolled in this course')
+    }
     return module;
   }
 }
