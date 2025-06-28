@@ -1,11 +1,12 @@
 import {
-  Injectable,
   CanActivate,
   ExecutionContext,
   ForbiddenException,
+  Injectable,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from 'src/decorators/role.decorator';
+import { Request } from 'express';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -19,13 +20,17 @@ export class RolesGuard implements CanActivate {
 
     if (!requiredRoles) return true;
 
-    const request = context.switchToHttp().getRequest();
-    const user = request.user;
+    // const request = context.switchToHttp().getRequest();
+    // const user = request.user;
 
-    if (!user || !user.role) {
-      throw new ForbiddenException('Foydalanuvchi aniqlanmadi');
-    }
+    // if (!user || !user.role) {
+    //   throw new ForbiddenException('Foydalanuvchi aniqlanmadi');
+    // }
 
+    const request = context
+      .switchToHttp()
+      .getRequest<Request & { user?: any }>();
+      const user = request.user;
     const hasRole = requiredRoles.includes(user.role);
 
     if (!hasRole) {
