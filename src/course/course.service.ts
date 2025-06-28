@@ -71,4 +71,10 @@ export class CourseService {
     if (deleted.affected == 0) throw new NotFoundException('User not found');
     return { message: 'Course deleted successfully!' };
   }
+
+  async getModules(id: number) {
+    const course = await this.courseRepository.findOne({where: {id}, relations: ['modules']})
+    if (!course) throw new NotFoundException('Course not found');
+    return course
+  }
 }

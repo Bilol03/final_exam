@@ -55,4 +55,10 @@ export class CourseController {
   remove(@Param('id') id: string) {
     return this.courseService.remove(+id);
   }
+
+  @Get(":courseId/module")
+  @UseGuards(JwtAuthGuard, )
+  async getModules(@Param('courseId') courseId: string) {
+    return await this.courseService.getModules(+courseId);
+  }
 }
