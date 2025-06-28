@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CourseService } from 'src/course/course.service';
-import { UserRole } from 'src/enums/roles.enum';
 import { UserInterface } from 'src/interfaces/user.interface';
 import { ModuleService } from 'src/module/module.service';
 import { Repository } from 'typeorm';
@@ -44,7 +43,7 @@ export class AssignmentsService {
         assignment.moduleId,
         user,
       );
-      if(!module) throw new NotFoundException('Module not found');
+      if (!module) throw new NotFoundException('Module not found');
     }
     return assignment;
   }

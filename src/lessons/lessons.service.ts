@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CourseService } from 'src/course/course.service';
-import { UserRole } from 'src/enums/roles.enum';
 import { UserInterface } from 'src/interfaces/user.interface';
 import { ModuleService } from 'src/module/module.service';
 import { Repository } from 'typeorm';
@@ -39,11 +38,10 @@ export class LessonsService {
     return await this.lessonsRepository.save(lesson);
   }
 
-
   async findOne(id: number, user: UserInterface) {
     const lesson = await this.lessonsRepository.findOne({ where: { id } });
     if (!lesson) throw new NotFoundException('Lesson not found');
-    if(user.role == 'student') {
+    if (user.role == 'student') {
       const module = await this.moduleService.findOne(lesson.moduleId, user);
       if (!module) throw new NotFoundException('Module not found');
     }

@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserRole } from 'src/enums/roles.enum';
 import { UserInterface } from 'src/interfaces/user.interface';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
@@ -24,7 +23,6 @@ export class CourseService {
       where: { studentId: user.id, courseId: courseId },
     });
 
-    
     if (!enrolled) return false;
     return true;
   }
@@ -88,11 +86,11 @@ export class CourseService {
 
   async getModules(id: number, user: UserInterface) {
     console.log(user);
-    
+
     if (user.role == 'student') {
       const enrolled = await this.isEnrolled(user, id);
       console.log(enrolled);
-      
+
       if (!enrolled) throw new NotFoundException('You are not enrolled');
     }
     const course = await this.courseRepository.findOne({

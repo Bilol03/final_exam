@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AssignmentsService } from 'src/assignments/assignments.service';
-import { UserRole } from 'src/enums/roles.enum';
 import { UserInterface } from 'src/interfaces/user.interface';
 import { ModuleService } from 'src/module/module.service';
 import { Repository } from 'typeorm';
