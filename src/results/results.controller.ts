@@ -1,28 +1,42 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
-import { ResultsService } from './results.service';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/decorators/role.decorator';
+import { UserRole } from 'src/enums/roles.enum';
+import { UserInterface } from 'src/interfaces/user.interface';
 import { CreateResultDto } from './dto/create-result.dto';
 import { UpdateResultDto } from './dto/update-result.dto';
+import { ResultsService } from './results.service';
 
 @Controller('results')
 export class ResultsController {
   constructor(private readonly resultsService: ResultsService) {}
 
   @Post()
-  create(@Body() createResultDto: CreateResultDto) {
-    return this.resultsService.create(createResultDto);
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.student)
+  create(
+    @Body() createResultDto: CreateResultDto,
+    @Req() req: Request & { user: UserInterface },
+  ) {
+    return this.resultsService.create(createResultDto, req.user);
   }
 
   @Get()
-  findAll() {
-    return this.resultsService.findAll();
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.student)
+  findAll( @Req() req: Request & { user: UserInterface }) {
+    return this.resultsService.findAll(req.user);
   }
 
   @Get(':id')
