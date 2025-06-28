@@ -1,5 +1,6 @@
 import { Course } from 'src/course/entities/course.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Lessons } from 'src/lessons/entities/lesson.entity';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Modules {
@@ -14,6 +15,8 @@ export class Modules {
   @JoinColumn({ name: 'courseId' }) // optional: if you want explicit column
   course: Course;
 
+  @OneToMany(() => Lessons, (lesson) => lesson.module)
+  lessons: Lessons[];
   @Column()
   courseId: number;
 }
